@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>使用教學｜WeDo Web</title>
+<style>
+  :root{--ink:#26313c;--soft:#5b6b7a;--mute:#8f9aa5;--line:#e1e6eb;--bg:#f2f5f7;--card:#fff;
+        --blue:#2b93cf;--green:#1ba055;--greenbg:#e6f5ec;--warn:#fff3cd;--warnink:#7a5b00;--chip:#eceff2;--chipink:#8f9aa5}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--ink:#e8edf2;--soft:#b5c0cb;--mute:#8d99a5;--line:#2c3742;--bg:#151b21;
+      --card:#1e262e;--greenbg:#183a27;--warn:#3a3214;--warnink:#f0d78a;--chip:#3a4753;--chipink:#d5dde5}
+  }
+  :root[data-theme="dark"]{--ink:#e8edf2;--soft:#b5c0cb;--mute:#8d99a5;--line:#2c3742;--bg:#151b21;
+      --card:#1e262e;--greenbg:#183a27;--warn:#3a3214;--warnink:#f0d78a;--chip:#3a4753;--chipink:#d5dde5}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:17px/1.7 -apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  main{max-width:760px;margin:0 auto;padding:28px 16px 60px}
+  h1{font-size:28px;margin:0 0 4px;line-height:1.3}
+  .sub{color:var(--soft);margin:0 0 18px}
+  h2{font-size:21px;margin:34px 0 12px}
+
+  /* device picker */
+  .pick{display:flex;gap:10px;margin:0 0 22px;position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0}
+  .pick button{flex:1;min-height:58px;border:2px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:14px;font:inherit;font-size:18px;font-weight:600;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:10px}
+  .pick button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .pick button[aria-selected="true"]{border-color:var(--green);background:var(--greenbg);color:var(--green)}
+  .dev{display:none}
+  .dev.on{display:block}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+  .step{display:flex;gap:14px}
+  .num{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;
+    font-weight:700;display:grid;place-items:center;margin-top:2px}
+  .step h3{margin:0 0 4px;font-size:18px}
+  .step p{margin:4px 0}
+  .step ul{margin:6px 0;padding-left:20px}
+  .step li{margin:4px 0}
+  .url{display:block;font:600 17px/1.4 ui-monospace,Menlo,monospace;background:var(--greenbg);color:var(--green);
+    padding:10px 14px;border-radius:10px;margin:8px 0;word-break:break-all;text-decoration:none}
+  .btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:600;
+    padding:10px 18px;border-radius:10px;margin:6px 0}
+  .warn{background:var(--warn);color:var(--warnink);border-radius:12px;padding:12px 16px;margin:12px 0}
+  .key{display:inline-block;border:1px solid var(--line);background:var(--bg);border-radius:6px;
+    padding:0 7px;font-size:15px;white-space:nowrap}
+  /* the app's search button, drawn as it looks */
+  .search{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--chip);
+    vertical-align:middle;margin:0 4px}
+  .search svg{width:24px;height:24px;stroke:var(--chipink);fill:none;stroke-width:2.2;stroke-linecap:round}
+  .qr{background:#fff;padding:12px;border-radius:12px;width:max-content;margin:10px 0}
+  .qr img,.qr canvas{display:block}
+  details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 18px;margin-bottom:10px}
+  summary{font-weight:600;cursor:pointer}
+  details p,details ul{margin:8px 0}
+  footer{color:var(--mute);font-size:13px;margin-top:40px;line-height:1.6}
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--blue);text-decoration:none;font-weight:600;margin-bottom:10px}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">‹ 回到 WeDo Web</a>
+  <h1>WeDo Web 使用教學</h1>
+  <p class="sub">請選擇你使用的裝置：</p>
+
+  <div class="pick" role="tablist">
+    <button role="tab" data-dev="ios" aria-selected="true"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>iPad / iPhone</button>
+    <button role="tab" data-dev="android" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>Android</button>
+  </div>
+
+  <!-- ================= iPad / iPhone ================= -->
+  <section class="dev on" id="ios">
+    <div class="warn"><b>重要：</b>iPad、iPhone 內建的 Safari 不能連藍牙，一定要用 <b>Bluefy</b> 這個瀏覽器開啟。</div>
+
+    <div class="card step"><div class="num">1</div><div>
+      <h3>安裝 Bluefy</h3>
+      <p>打開 <b>App Store</b>，搜尋「<b>Bluefy</b>」，安裝「Bluefy – Web BLE Browser」。</p>
+      <a class="btn" href="https://apps.apple.com/app/bluefy-web-ble-browser/id1492822055">在 App Store 開啟 Bluefy</a>
+    </div></div>
+
+    <div class="card step"><div class="num">2</div><div>
+      <h3>打開 Bluefy，允許使用藍牙</h3>
+      <p>第一次打開時，會詢問「Bluefy 想要使用藍牙」，請按 <span class="key">允許</span>。</p>
+      <p>如果不小心按了「不允許」：到 <b>設定 → Bluefy</b>，把「藍牙」打開。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">3</div><div>
+      <h3>在 Bluefy 輸入網址</h3>
+      <p>點 Bluefy 上方的網址列，輸入：</p>
+      <a class="url" href="https://wedo.funrobot.tw/">https://wedo.funrobot.tw/</a>
+      <p>或用相機掃這個 QR Code（如果跳到 Safari，就把網址複製到 Bluefy）：</p>
+      <div class="qr"></div>
+      <p>建議把網址加入 Bluefy 的書籤，下次就不用再輸入。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">4</div><div>
+      <h3>建立專案</h3>
+      <p>看到「我的專案」首頁後，點綠色的 <span class="key">＋ 新專案</span> 進入寫程式的畫面。</p>
+      <p>程式會<b>自動儲存</b>，不用按儲存。左上角的 🏠 可以回到首頁。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">5</div><div>
+      <h3>連接 WeDo 2.0 主機</h3>
+      <ul>
+        <li>打開主機電源（按主機上的綠色按鈕，燈會閃爍）。</li>
+        <li>點畫面<b>右上角藍色的主機圖示</b>，右邊會滑出「選擇 Smarthub」。</li>
+        <li>點下方的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 按鈕，Bluefy 會列出附近的主機，點選你的主機。</li>
+        <li>連上後，右上角會顯示主機名稱。</li>
+      </ul>
+      <p>畫面右下角會顯示 Port 1、Port 2 接了什麼（馬達、傾斜感測器、距離感測器）和目前的數值。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">6</div><div>
+      <h3>開始寫程式</h3>
+      <p>從下方把積木<b>往上拖</b>到畫面中，每個程式都從黃色的「開始」積木開始。點一下「開始」積木就會執行，右下角的紅色方塊是停止。</p>
+    </div></div>
+
+    <h2>遇到問題</h2>
+    <details><summary>按 <span class="search" style="width:30px;height:30px"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 後找不到主機</summary>
+      <ul>
+        <li>確認主機有開機、電池有電（燈在閃）。</li>
+        <li>一台主機同時只能連一台裝置。請先關掉官方 WeDo App 或其他平板的連線。</li>
+        <li>到 設定 → Bluefy，確認「藍牙」有打開。</li>
+        <li>關掉主機電源再打開，重新搜尋。</li>
+      </ul>
+    </details>
+    <details><summary>網頁一片空白</summary>
+      <p>確認網址是 <b>https://</b> 開頭，並且是在 Bluefy 裡打開，不是 Safari。</p>
+    </details>
+    <details><summary>馬達不會轉</summary>
+      <ul>
+        <li>看畫面右下角，Port 1 或 Port 2 有沒有出現馬達圖示。沒有的話，拔插一次馬達的線。</li>
+        <li>確認程式是從「開始」積木開始，並且有點「開始」執行。</li>
+      </ul>
+    </details>
+    <details><summary>聲音感測器沒反應</summary>
+      <p>聲音感測器用的是裝置的麥克風。第一次使用時要按「允許」；如果按了不允許，到 設定 → Bluefy 打開「麥克風」。</p>
+    </details>
+    <details><summary>給老師：查看連線紀錄</summary>
+      <p>首頁 ⚙ 設定 → 開發者模式選「開」。之後點右上角主機圖示，下方會出現連線紀錄，按「Copy」可以複製下來回報問題。</p>
+    </details>
+  </section>
+
+  <!-- ================= Android ================= -->
+  <section class="dev" id="android">
+    <div class="warn"><b>重要：</b>請用 <b>Chrome</b> 開啟。Samsung 網際網路、LINE 內建瀏覽器等都不能連藍牙。</div>
+
+    <div class="card step"><div class="num">1</div><div>
+      <h3>確認 Chrome 是最新版</h3>
+      <p>打開 <b>Play 商店</b>，搜尋「<b>Chrome</b>」，如果有「更新」就先更新。</p>
+      <a class="btn" href="https://play.google.com/store/apps/details?id=com.android.chrome">在 Play 商店開啟 Chrome</a>
+    </div></div>
+
+    <div class="card step"><div class="num">2</div><div>
+      <h3>打開藍牙和定位</h3>
+      <p>從螢幕上方往下滑，打開 <b>藍牙</b> 和 <b>定位（位置）</b>。</p>
+      <p>部分 Android 手機或平板沒開定位就搜尋不到藍牙裝置。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">3</div><div>
+      <h3>在 Chrome 輸入網址</h3>
+      <p>點 Chrome 上方的網址列，輸入：</p>
+      <a class="url" href="https://wedo.funrobot.tw/">https://wedo.funrobot.tw/</a>
+      <p>或用相機掃這個 QR Code，選擇用 Chrome 開啟：</p>
+      <div class="qr"></div>
+      <p>建議按 Chrome 右上角的 <span class="key">⋮</span> → <span class="key">加到主畫面</span>，之後就能像 App 一樣從主畫面打開。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">4</div><div>
+      <h3>建立專案</h3>
+      <p>看到「我的專案」首頁後，點綠色的 <span class="key">＋ 新專案</span> 進入寫程式的畫面。</p>
+      <p>程式會<b>自動儲存</b>，不用按儲存。左上角的 🏠 可以回到首頁。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">5</div><div>
+      <h3>連接 WeDo 2.0 主機</h3>
+      <ul>
+        <li>打開主機電源（按主機上的綠色按鈕，燈會閃爍）。</li>
+        <li>點畫面<b>右上角藍色的主機圖示</b>，右邊會滑出「選擇 Smarthub」。</li>
+        <li>點下方的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 按鈕。</li>
+        <li>第一次會詢問是否允許 Chrome 使用「<b>附近的裝置</b>」或「<b>位置</b>」，請按 <span class="key">允許</span>。</li>
+        <li>Chrome 會跳出附近主機的清單，點選你的主機，再按 <span class="key">配對</span>。</li>
+        <li>連上後，右上角會顯示主機名稱。</li>
+      </ul>
+      <p>畫面右下角會顯示 Port 1、Port 2 接了什麼（馬達、傾斜感測器、距離感測器）和目前的數值。</p>
+    </div></div>
+
+    <div class="card step"><div class="num">6</div><div>
+      <h3>開始寫程式</h3>
+      <p>從下方把積木<b>往上拖</b>到畫面中，每個程式都從黃色的「開始」積木開始。點一下「開始」積木就會執行，右下角的紅色方塊是停止。</p>
+    </div></div>
+
+    <h2>遇到問題</h2>
+    <details><summary>按 <span class="search" style="width:30px;height:30px"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 後找不到主機</summary>
+      <ul>
+        <li>確認主機有開機、電池有電（燈在閃）。</li>
+        <li>確認手機或平板的 <b>藍牙</b> 和 <b>定位</b> 都有打開。</li>
+        <li>到 設定 → 應用程式 → Chrome → 權限，確認「附近的裝置」和「位置」是允許。</li>
+        <li>一台主機同時只能連一台裝置。請先關掉官方 WeDo App 或其他平板的連線。</li>
+        <li>關掉主機電源再打開，重新搜尋。</li>
+      </ul>
+    </details>
+    <details><summary>按了按鈕沒有任何反應</summary>
+      <p>確認是在 <b>Chrome</b> 裡打開，網址是 <b>https://</b> 開頭。從 LINE 點開的連結會在 LINE 裡面開，請按右上角選「用 Chrome 開啟」。</p>
+    </details>
+    <details><summary>馬達不會轉</summary>
+      <ul>
+        <li>看畫面右下角，Port 1 或 Port 2 有沒有出現馬達圖示。沒有的話，拔插一次馬達的線。</li>
+        <li>確認程式是從「開始」積木開始，並且有點「開始」執行。</li>
+      </ul>
+    </details>
+    <details><summary>聲音感測器沒反應</summary>
+      <p>聲音感測器用的是裝置的麥克風。第一次使用時要按「允許」；如果按了不允許，到 設定 → 應用程式 → Chrome → 權限，打開「麥克風」。</p>
+    </details>
+    <details><summary>給老師：查看連線紀錄</summary>
+      <p>首頁 ⚙ 設定 → 開發者模式選「開」。之後點右上角主機圖示，下方會出現連線紀錄，按「Copy」可以複製下來回報問題。</p>
+    </details>
+  </section>
+
+  <footer>
+    WeDo Web｜藍牙通訊依據 LEGO® 公司提供的 WeDo 2.0 SDK 製作。LEGO® 與 WeDo 是 LEGO Group 的商標，本網頁並非 LEGO Group 製作或認可。
+  </footer>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  /* QR codes for the app's address */
+  document.querySelectorAll('.qr').forEach(el=>{
+    try{ new QRCode(el,{text:'https://wedo.funrobot.tw/',width:180,height:180}); }
+    catch(e){ el.style.display='none'; }
+  });
+  /* device tabs: the address (#ios / #android) wins, then the last choice,
+     then a guess from the device */
+  const tabs=[...document.querySelectorAll('.pick button')];
+  function show(dev,remember){
+    tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.dev===dev)));
+    document.querySelectorAll('.dev').forEach(s=>s.classList.toggle('on',s.id===dev));
+    if(remember){
+      try{ localStorage.setItem('wedo-guide',dev); }catch(e){}
+      try{ history.replaceState(null,'','#'+dev); }catch(e){}
+    }
+  }
+  tabs.forEach(b=>b.onclick=()=>show(b.dataset.dev,true));
+  let first=location.hash.slice(1);
+  if(first!=='ios'&&first!=='android'){
+    try{ first=localStorage.getItem('wedo-guide'); }catch(e){ first=null; }
+    if(first!=='ios'&&first!=='android') first=/Android/i.test(navigator.userAgent)?'android':'ios';
+  }
+  show(first,false);
+</script>
+</body>
+</html>

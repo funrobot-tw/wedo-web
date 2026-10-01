@@ -3,7 +3,9 @@
 用瀏覽器就能替 LEGO® WeDo 2.0 主機寫積木程式，不用安裝 App。
 支援原廠 WeDo 2.0 Smarthub，也支援副廠相容主機（「LPF2 Smart Hub」、「M_SmartCar」）。
 
-**👉 開始使用：** [https://github.io/funrobot-tw/wedo-web](https://funrobot-tw.github.io/wedo-web/)
+**👉 開始使用：** https://github.com/funrobot-tw/wedo-web
+
+**📱 使用教學（iPad / iPhone / Android）：** https://wedo.funrobot.tw/guide.html
 
 ## 功能
 

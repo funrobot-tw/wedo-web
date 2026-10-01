@@ -405,6 +405,9 @@
     font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:0 14px}
   .hbtn svg{width:22px;height:22px;stroke:#5b6b7a;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .hbtn:active{background:#dde3e8}
+  a.hbtn{text-decoration:none}
+  /* on a phone the three buttons and the title share one row: icons only */
+  @media (max-width:520px){ .hbtn span{display:none} .hbtn{padding:0 11px} #homebar h1{font-size:20px} }
   #homebody{flex:1;min-height:0;overflow-y:auto;padding:22px 24px 40px;touch-action:pan-y;-webkit-overflow-scrolling:touch}
   #homebody h2{font-size:20px;color:#5b6b7a;margin:0 0 14px}
   #homewarn{display:none;background:#fff3cd;color:#7a5b00;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:14px;line-height:1.5}
@@ -529,6 +532,7 @@
   <div id="homebar">
     <button class="hbtn" id="hset"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span data-i18n="home.settings"></span></button>
     <h1>WeDo Web</h1>
+    <a class="hbtn" id="hguide" href="guide.html"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M8 7h7M8 11h7"/></svg><span data-i18n="home.guide"></span></a>
     <button class="hbtn" id="himport"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 15v5h16v-5"/></svg><span data-i18n="home.import"></span></button>
   </div>
   <div id="homebody">
@@ -675,7 +679,7 @@ const I18N={
   'hub.nobt':'這個瀏覽器不支援網頁藍牙。',
   'hub.picker':'瀏覽器會列出附近的 Smarthub。','hub.scanning':'正在搜尋 Smarthub⋯',
   'hub.scandone':'搜尋結束。要再找一次請按搜尋鍵。','hub.scanno':'無法即時搜尋，改用瀏覽器的清單。',
-  'home.settings':'設定','home.import':'匯入','home.mine':'我的專案','home.new':'新專案',
+  'home.settings':'設定','home.guide':'教學','home.import':'匯入','home.mine':'我的專案','home.new':'新專案',
   'home.empty':'還沒有專案。點「新專案」開始寫程式。',
   'home.nodb':'這個瀏覽器現在不能保存資料（可能是無痕模式），關掉網頁專案就會不見，請記得匯出。',
   'home.defname':n=>'我的專案 '+n,'home.justnow':'剛剛','home.noblocks':'空白',
@@ -720,7 +724,7 @@ const I18N={
   'hub.nobt':'Web Bluetooth is not available in this browser.',
   'hub.picker':'The browser will show its own list of nearby Smarthubs.','hub.scanning':'Scanning for Smarthubs…',
   'hub.scandone':'Scan finished. Press search to look again.','hub.scanno':'Live scanning refused; using the browser’s picker.',
-  'home.settings':'Settings','home.import':'Import','home.mine':'My projects','home.new':'New project',
+  'home.settings':'Settings','home.guide':'Guide','home.import':'Import','home.mine':'My projects','home.new':'New project',
   'home.empty':'No projects yet. Tap “New project” to start.',
   'home.nodb':'This browser cannot keep data right now (private mode?). Projects disappear when the page closes, so export them.',
   'home.defname':n=>'Project '+n,'home.justnow':'just now','home.noblocks':'empty',
