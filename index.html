@@ -296,6 +296,11 @@
   .batt:after{content:"";position:absolute;right:-5px;top:6px;width:3px;height:8px;background:#fff;border-radius:0 2px 2px 0}
   .kill{width:34px;height:34px;border-radius:50%;background:#e03434;border:none;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
   .kill svg{width:16px;height:16px;stroke:#fff;stroke-width:3;stroke-linecap:round;fill:none}
+  .rename{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.25);border:none;cursor:pointer;
+    display:grid;place-items:center;flex:0 0 auto}
+  .rename svg{width:17px;height:17px;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  #hncount{font-size:12.5px;color:#8f9aa5;text-align:right;margin-top:4px}
+  #hncount.over{color:#e03434;font-weight:600}
   #panelfoot{padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto}
   #refresh{width:58px;height:58px;border-radius:50%;background:#eceff2;border:none;cursor:pointer;display:grid;place-items:center}
   #refresh svg{width:28px;height:28px;stroke:#8f9aa5;fill:none;stroke-width:2.2;stroke-linecap:round}
@@ -569,7 +574,15 @@
   <div class="seg" id="sdev"><button data-dev="0" data-i18n="set.off"></button><button data-dev="1" data-i18n="set.on"></button></div>
   <div class="drow"><button id="sdone" class="pri" data-i18n="done"></button></div>
   <p class="dnote" data-i18n="set.credit"></p>
-  <p class="dver">WeDo Web 3.1</p>
+  <p class="dver">WeDo Web 3.2</p>
+</div></div>
+<div id="hubdlg" class="dlg"><div class="dcard">
+  <h3 data-i18n="hn.title"></h3>
+  <div class="dlab" data-i18n="hn.label"></div>
+  <input type="text" id="hname" autocomplete="off" enterkeyhint="done">
+  <div id="hncount"></div>
+  <p class="dnote" data-i18n="hn.note"></p>
+  <div class="drow"><button id="hncancel" data-i18n="cancel"></button><button id="hnsave" class="pri" data-i18n="hn.save"></button></div>
 </div></div>
 <div id="toast"></div>
 <div id="ghost"></div>
@@ -695,7 +708,7 @@ const I18N={
   'set.dev':'開發者模式（老師檢查用）','set.off':'關','set.on':'開',
   'toast.imported':n=>'已匯入 '+n+' 個專案','toast.same':n=>'，'+n+' 個已經是最新的',
   'toast.bad':'這不是 WeDo Web 的專案檔','toast.nothing':'沒有專案可以備份',
-  'toast.deleted':'已刪除','set.credit':'藍牙通訊依據 LEGO® 公司提供的 WeDo 2.0 SDK 製作。LEGO® 與 WeDo 是 LEGO Group 的商標，本網頁並非 LEGO Group 製作或認可。','file.backup':'WeDo-備份-'
+  'toast.deleted':'已刪除','hn.title':'幫主機改名','hn.label':'新名稱','hn.save':'儲存','hn.note':'名稱會存在主機裡，換一台平板或電腦連線也會看到。中文一個字佔 3 個位元組。','hn.count':(n,m)=>n+' / '+m+' 位元組','hn.done':'主機已改名','hn.fail':'這台主機不接受改名：','hn.rename':'改名','set.credit':'藍牙通訊依據 LEGO® 公司提供的 WeDo 2.0 SDK 製作。LEGO® 與 WeDo 是 LEGO Group 的商標，本網頁並非 LEGO Group 製作或認可。','file.backup':'WeDo-備份-'
  },
  en:{
   empty:'Drag blocks from the tray below to build a program.<br>Start each program with a Start block.',
@@ -740,7 +753,7 @@ const I18N={
   'set.dev':'Developer mode (for teachers)','set.off':'Off','set.on':'On',
   'toast.imported':n=>'Imported '+n+' project'+(n===1?'':'s'),'toast.same':n=>', '+n+' already up to date',
   'toast.bad':'That is not a WeDo Web project file','toast.nothing':'No projects to back up',
-  'toast.deleted':'Deleted','set.credit':'The Bluetooth layer is built on the WeDo 2.0 SDK by the LEGO® Group. LEGO® and WeDo are trademarks of the LEGO Group, which does not make or endorse this page.','file.backup':'WeDo-backup-'
+  'toast.deleted':'Deleted','hn.title':'Rename the hub','hn.label':'New name','hn.save':'Save','hn.note':'The name is stored in the hub itself, so every tablet or computer sees it.','hn.count':(n,m)=>n+' / '+m+' bytes','hn.done':'Hub renamed','hn.fail':'This hub refused the new name: ','hn.rename':'Rename','set.credit':'The Bluetooth layer is built on the WeDo 2.0 SDK by the LEGO® Group. LEGO® and WeDo are trademarks of the LEGO Group, which does not make or endorse this page.','file.backup':'WeDo-backup-'
  }
 };
 /* palette tooltips, sounds and light colours in Chinese; English uses the originals */
@@ -2974,8 +2987,14 @@ function renderHubs(){
     if(h.connected) cls+=h.pressed?'pressed':'connected';
     else if(conn) cls+='blocked'; else cls+=h.pressed?'pressed':'found';
     r.className=cls;
-    r.innerHTML='<div class="hbrick"></div><div class="nm">'+(h.name||tx('hub.unnamed'))+'</div>';
+    r.innerHTML='<div class="hbrick"></div><div class="nm"></div>';
+    r.querySelector('.nm').textContent=h.name||tx('hub.unnamed');
     if(h.connected){
+      if(h.nameC){
+        const n=document.createElement('button');n.className='rename';n.title=tx('hn.rename');
+        n.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>';
+        n.onclick=e=>{e.stopPropagation();openHubRename(h);};r.appendChild(n);
+      }
       const b=document.createElement('div');b.className='batt';
       b.textContent=(h.battery!=null?h.battery+'%':'--');r.appendChild(b);
       const k=document.createElement('button');k.className='kill';k.title='Disconnect';
@@ -3025,7 +3044,7 @@ async function connect(device){
       for(const c of ['firmware_revision_string','software_revision_string','manufacturer_name_string']){
         try{log(c.replace(/_/g,' ')+': '+new TextDecoder().decode(await (await di.getCharacteristic(c)).readValue()).replace(/\0+$/,''));}catch(e){}
       }}catch(e){log('device information unavailable: '+e.message);}
-    try{const c=await svc.getCharacteristic(C_NAME);
+    try{const c=await svc.getCharacteristic(C_NAME); h.nameC=c;
       h.name=new TextDecoder().decode(await c.readValue()).replace(/\0+$/,'');}catch(e){log('name read failed: '+e.message);}
     const name=h.name;
     try{const bc=await svc.getCharacteristic(C_BUTTON);
@@ -3056,6 +3075,44 @@ async function connect(device){
     const h=hubs.get(device.id);if(h)h.connected=false;
   }finally{busy=false;renderHubs();setHubWidget();}
 }
+/* ---- rename the hub: UTF-8 written to the name characteristic (1524) with
+   response, as the official SDK's setName does. 14 bytes is the longest name
+   these hubs keep; longer ones are cut off by the hub. ---- */
+const HUB_NAME_MAX=14;
+const hubDlg=document.getElementById('hubdlg'), hubIn=document.getElementById('hname');
+let renaming=null;
+const utf8=t=>new TextEncoder().encode(t);
+function paintHubCount(){
+  const n=utf8(hubIn.value).length, el=document.getElementById('hncount');
+  el.textContent=tx('hn.count',n,HUB_NAME_MAX); el.classList.toggle('over',n>HUB_NAME_MAX);
+  document.getElementById('hnsave').disabled=!hubIn.value.trim()||n>HUB_NAME_MAX;
+}
+function openHubRename(h){
+  renaming=h; hubIn.value=h.name||''; paintHubCount(); dlgOpen(hubDlg);
+  setTimeout(()=>{ hubIn.focus(); hubIn.select(); },320);
+}
+function closeHubRename(){ renaming=null; dlgClose(hubDlg); hubIn.blur(); }
+async function saveHubRename(){
+  const h=renaming, name=hubIn.value.trim();
+  if(!h||!name||utf8(name).length>HUB_NAME_MAX) return;
+  closeHubRename();
+  try{
+    const c=h.nameC, data=utf8(name);
+    if(c.writeValueWithResponse) await c.writeValueWithResponse(data); else await c.writeValue(data);
+    /* read it back: what the hub kept is the truth */
+    let kept=name;
+    try{ kept=new TextDecoder().decode(await c.readValue()).replace(/\0+$/,'')||name; }catch(e){}
+    h.name=kept; log('hub renamed to "'+kept+'"');
+    toast(tx('hn.done'));
+  }catch(e){ log('rename failed: '+e.message); toast(tx('hn.fail')+e.message); }
+  renderHubs(); setHubWidget();
+}
+hubIn.addEventListener('input',paintHubCount);
+hubIn.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); saveHubRename(); }
+                                     else if(e.key==='Escape'){ e.preventDefault(); closeHubRename(); } });
+document.getElementById('hnsave').onclick=saveHubRename;
+document.getElementById('hncancel').onclick=closeHubRename;
+hubDlg.onclick=e=>{ if(e.target===hubDlg) closeHubRename(); };
 async function disconnect(h){
   haltEverything('hub disconnected');
   /* put the LED back before the link goes down, so the next person to pick this
