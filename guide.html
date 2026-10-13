@@ -56,6 +56,9 @@
   summary{font-weight:600;cursor:pointer}
   details p,details ul{margin:8px 0}
   footer{color:var(--mute);font-size:13px;margin-top:40px;line-height:1.6}
+  .shot{margin:12px 0 16px}
+  .shot img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}
+  .shot figcaption{font-size:13.5px;color:var(--mute);margin-top:6px}
   .back{display:inline-flex;align-items:center;gap:6px;color:var(--blue);text-decoration:none;font-weight:600;margin-bottom:10px}
 </style>
 </head>
@@ -98,18 +101,22 @@
     <div class="card step"><div class="num">4</div><div>
       <h3>建立專案</h3>
       <p>看到「我的專案」首頁後，點綠色的 <span class="key">＋ 新專案</span> 進入寫程式的畫面。</p>
+      <figure class="shot"><img src="images/guide/ipad-01-home.jpg" alt="WeDo Web 首頁「我的專案」，紅框是「＋ 新專案」" loading="lazy"><figcaption>「我的專案」首頁：點紅框的「＋ 新專案」。</figcaption></figure>
       <p>程式會<b>自動儲存</b>，不用按儲存。左上角的 🏠 可以回到首頁。</p>
     </div></div>
 
     <div class="card step"><div class="num">5</div><div>
       <h3>連接 WeDo 2.0 主機</h3>
-      <ul>
-        <li>打開主機電源（按主機上的綠色按鈕，燈會閃爍）。</li>
-        <li>點畫面<b>右上角藍色的主機圖示</b>，右邊會滑出「選擇 Smarthub」。</li>
-        <li>點下方的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 箭頭按鈕。</li>
-        <li>畫面會跳出 <b>Bluefy 的視窗</b>，列出附近可以連接的主機，點選你的主機。</li>
-        <li>選好後，主機才會出現在「選擇 Smarthub」的清單裡，變成綠色就是連上了，右上角也會顯示主機名稱。</li>
-      </ul>
+      <p><b>① 打開主機電源</b>：按主機上的綠色按鈕，主機燈號會白光閃爍（閃兩下、停約 0.5 秒，重複）。</p>
+      <p><b>② 點畫面右上角藍色的主機圖示</b>（顯示「未連線」）。</p>
+      <figure class="shot"><img src="images/guide/ipad-02-editor.jpg" alt="寫程式的畫面，紅框是右上角藍色的主機圖示" loading="lazy"><figcaption>寫程式的畫面：點紅框的主機圖示。</figcaption></figure>
+      <p><b>③ 右邊滑出「選擇 Smarthub」，點中間的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 箭頭按鈕</b>。</p>
+      <figure class="shot"><img src="images/guide/ipad-03-search.jpg" alt="選擇 Smarthub 面板，紅框是箭頭按鈕" loading="lazy"><figcaption>「選擇 Smarthub」面板：點紅框的箭頭按鈕。</figcaption></figure>
+      <p><b>④ Bluefy 跳出「Select device」視窗，點選你的主機</b>。下方的開關維持原本的設定即可。</p>
+      <figure class="shot"><img src="images/guide/ipad-04-select-device.jpg" alt="Bluefy 的 Select device 視窗，紅框是主機名稱" loading="lazy"><figcaption>Bluefy 的「Select device」視窗：點紅框的主機。</figcaption></figure>
+      <p>這個視窗顯示的名稱可能跟主機實際的名稱不同。例如截圖中視窗顯示「LPF2 Smart Hub」，連上後 WeDo Web 顯示的是這台主機的名稱「FUN02」。</p>
+      <p><b>⑤ 主機出現在「選擇 Smarthub」清單裡並變成綠色，就是連上了</b>。綠色列上會顯示主機名稱和電量；✏️ 可以幫主機改名，紅色 ✕ 是中斷連線。</p>
+      <figure class="shot"><img src="images/guide/ipad-05-connected.jpg" alt="連線成功，主機名稱 FUN02 顯示在綠色列" loading="lazy"><figcaption>連線成功：主機變成綠色，顯示名稱與電量。</figcaption></figure>
       <p>畫面右下角會顯示 Port 1、Port 2 接了什麼（馬達、傾斜感測器、距離感測器）和目前的數值。</p>
     </div></div>
 
@@ -155,9 +162,8 @@
     </div></div>
 
     <div class="card step"><div class="num">2</div><div>
-      <h3>打開藍牙和定位</h3>
-      <p>從螢幕上方往下滑，打開 <b>藍牙</b> 和 <b>定位（位置）</b>。</p>
-      <p>部分 Android 手機或平板沒開定位就搜尋不到藍牙裝置。</p>
+      <h3>打開藍牙</h3>
+      <p>從螢幕上方往下滑，打開 <b>藍牙</b>。不需要打開定位。</p>
     </div></div>
 
     <div class="card step"><div class="num">3</div><div>
@@ -166,25 +172,29 @@
       <a class="url" href="https://wedo.funrobot.tw/">https://wedo.funrobot.tw/</a>
       <p>或用相機掃這個 QR Code，選擇用 Chrome 開啟：</p>
       <div class="qr"></div>
-      <p>建議按 Chrome 右上角的 <span class="key">⋮</span> → <span class="key">加到主畫面</span>，之後就能像 App 一樣從主畫面打開。</p>
+      <p>建議按 Chrome 右上角的 <span class="key">⋮</span> → <span class="key">加到主畫面</span>，之後就能像 App 一樣從主畫面打開。部分手機沒有這個選項（例如 Honor MagicOS 10），請改把網址加入 Chrome 書籤。</p>
     </div></div>
 
     <div class="card step"><div class="num">4</div><div>
       <h3>建立專案</h3>
       <p>看到「我的專案」首頁後，點綠色的 <span class="key">＋ 新專案</span> 進入寫程式的畫面。</p>
+      <figure class="shot"><img src="images/guide/android-01-home.jpg" alt="WeDo Web 首頁「我的專案」，紅框是「＋ 新專案」" loading="lazy"><figcaption>「我的專案」首頁：點紅框的「＋ 新專案」。</figcaption></figure>
       <p>程式會<b>自動儲存</b>，不用按儲存。左上角的 🏠 可以回到首頁。</p>
     </div></div>
 
     <div class="card step"><div class="num">5</div><div>
       <h3>連接 WeDo 2.0 主機</h3>
-      <ul>
-        <li>打開主機電源（按主機上的綠色按鈕，燈會閃爍）。</li>
-        <li>點畫面<b>右上角藍色的主機圖示</b>，右邊會滑出「選擇 Smarthub」。</li>
-        <li>點下方的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 箭頭按鈕。</li>
-        <li>第一次會詢問是否允許 Chrome 使用「<b>附近的裝置</b>」或「<b>位置</b>」，請按 <span class="key">允許</span>。</li>
-        <li>畫面會跳出 <b>Chrome 的系統視窗</b>，列出附近可以連接的主機，點選你的主機，再按 <span class="key">配對</span>。</li>
-        <li>選好後，主機才會出現在「選擇 Smarthub」的清單裡，變成綠色就是連上了，右上角也會顯示主機名稱。</li>
-      </ul>
+      <p><b>① 打開主機電源</b>：按主機上的綠色按鈕，主機燈號會白光閃爍（閃兩下、停約 0.5 秒，重複）。</p>
+      <p><b>② 點畫面右上角藍色的主機圖示</b>（顯示「未連線」）。</p>
+      <figure class="shot"><img src="images/guide/android-02-editor.jpg" alt="寫程式的畫面，紅框是右上角藍色的主機圖示" loading="lazy"><figcaption>寫程式的畫面：點紅框的主機圖示。</figcaption></figure>
+      <p><b>③ 右邊滑出「選擇 Smarthub」，點中間的 <span class="search"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 箭頭按鈕</b>。第一次會詢問是否允許 Chrome 使用「附近的裝置」，請按 <span class="key">允許</span>。</p>
+      <figure class="shot"><img src="images/guide/android-03-search.jpg" alt="選擇 Smarthub 面板，紅框是箭頭按鈕" loading="lazy"><figcaption>「選擇 Smarthub」面板：點紅框的箭頭按鈕。</figcaption></figure>
+      <p><b>④ Chrome 跳出「https://wedo.funrobot.tw 要求配對」視窗，點選你的主機</b>。視窗下方顯示「正在掃描裝置…」時，主機可能要等幾秒才會出現。</p>
+      <figure class="shot"><img src="images/guide/android-04-select-device.jpg" alt="Chrome 的配對視窗，紅框是主機名稱" loading="lazy"><figcaption>Chrome 的配對視窗：點紅框的主機。</figcaption></figure>
+      <p><b>⑤ 主機變成反白後，按 <span class="key">配對</span></b>。</p>
+      <figure class="shot"><img src="images/guide/android-05-pair.jpg" alt="選好主機後，紅框是反白的主機與「配對」按鈕" loading="lazy"><figcaption>選好主機後按「配對」。</figcaption></figure>
+      <p><b>⑥ 右上角的主機圖示顯示主機名稱，就是連上了</b>。再點一次主機圖示，可以看到主機在「選擇 Smarthub」清單裡變成綠色。</p>
+      <figure class="shot"><img src="images/guide/android-06-connected.jpg" alt="連線成功，右上角顯示主機名稱 Fun02" loading="lazy"><figcaption>連線成功：右上角顯示主機名稱。</figcaption></figure>
       <p>畫面右下角會顯示 Port 1、Port 2 接了什麼（馬達、傾斜感測器、距離感測器）和目前的數值。</p>
     </div></div>
 
@@ -197,8 +207,8 @@
     <details><summary>按 <span class="search" style="width:30px;height:30px"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span> 後找不到主機</summary>
       <ul>
         <li>確認主機有開機、電池有電（燈在閃）。</li>
-        <li>確認手機或平板的 <b>藍牙</b> 和 <b>定位</b> 都有打開。</li>
-        <li>到 設定 → 應用程式 → Chrome → 權限，確認「附近的裝置」和「位置」是允許。</li>
+        <li>確認手機或平板的 <b>藍牙</b> 有打開。</li>
+        <li>到 設定 → 應用程式 → Chrome → 權限，確認「附近的裝置」是允許。</li>
         <li>一台主機同時只能連一台裝置。請先關掉官方 WeDo App 或其他平板的連線。</li>
         <li>關掉主機電源再打開，重新搜尋。</li>
       </ul>
