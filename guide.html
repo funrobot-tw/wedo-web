@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>使用教學｜WeDo Web</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
 <style>
   :root{--ink:#26313c;--soft:#5b6b7a;--mute:#8f9aa5;--line:#e1e6eb;--bg:#f2f5f7;--card:#fff;
         --blue:#2b93cf;--green:#1ba055;--greenbg:#e6f5ec;--warn:#fff3cd;--warnink:#7a5b00;--chip:#eceff2;--chipink:#8f9aa5}
@@ -261,6 +264,10 @@
     if(first!=='ios'&&first!=='android') first=/Android/i.test(navigator.userAgent)?'android':'ios';
   }
   show(first,false);
+</script>
+<script>
+/* keep a copy on this device so WeDo Web opens without internet (see sw.js) */
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
