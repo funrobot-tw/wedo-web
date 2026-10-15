@@ -580,7 +580,7 @@
   <div class="seg" id="sdev"><button data-dev="0" data-i18n="set.off"></button><button data-dev="1" data-i18n="set.on"></button></div>
   <div class="drow"><button id="sdone" class="pri" data-i18n="done"></button></div>
   <p class="dnote" data-i18n="set.credit"></p>
-  <p class="dver">WeDo Web 3.3</p>
+  <p class="dver">WeDo Web 3.4</p>
 </div></div>
 <div id="welcome" class="dlg"><div class="dcard">
   <div class="wicon"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M8 7h7M8 11h7"/></svg></div>
@@ -1112,10 +1112,32 @@ function clearSensors(){
 /* Input commands go out without response, as the official app sends them: an
    "M_SmartCar" hub's Bluetooth module appears to drop acknowledged writes to
    this characteristic, so sensor setup never reached the hub. */
+/* Android's Bluetooth stack runs one GATT operation at a time, and Chrome on
+   Android rejects a second one ("GATT operation already in progress") instead
+   of queueing it as desktop Chrome does. Subscribing to three characteristics
+   at once lost the port-report subscription, so ports 1 and 2 were never
+   reported. Every read, write and subscription goes through this queue; one
+   that still hits "in progress" (another tab, the OS) is retried. */
+let gattChain=Promise.resolve();
+function gatt(fn){
+  const run=async()=>{
+    for(let i=0;;i++){
+      /* a stuck operation must not hold up everything behind it */
+      try{ return await Promise.race([fn(),new Promise((_,no)=>setTimeout(()=>no(new Error('GATT operation timed out')),5000))]); }
+      catch(e){
+        if(i<5&&/in progress|busy/i.test(e&&e.message||'')){ await new Promise(r=>setTimeout(r,80*(i+1))); continue; }
+        throw e;
+      }
+    }
+  };
+  const p=gattChain.then(run,run);
+  gattChain=p.catch(()=>{});
+  return p;
+}
 function writeInput(h,data){
   const c=h.inp;
-  if(c.properties&&c.properties.writeWithoutResponse&&c.writeValueWithoutResponse) return c.writeValueWithoutResponse(data);
-  return c.writeValueWithResponse ? c.writeValueWithResponse(data) : c.writeValue(data);
+  if(c.properties&&c.properties.writeWithoutResponse&&c.writeValueWithoutResponse) return gatt(()=>c.writeValueWithoutResponse(data));
+  return gatt(()=>c.writeValueWithResponse ? c.writeValueWithResponse(data) : c.writeValue(data));
 }
 /* tell a port which mode to report in, and to notify us as it changes */
 const inputFormat=(port,type,mode,unit)=>
@@ -1183,7 +1205,7 @@ async function nudgePorts(h){
   /* keep going while reports keep coming; stop once 6 asks bring nothing new
      (an empty port is simply never reported) */
   for(let i=0;i<30&&idle<6&&h.connected;i++,n++){
-    try{ if(h.batt) await h.batt.readValue(); }catch(e){}
+    try{ if(h.batt) await gatt(()=>h.batt.readValue()); }catch(e){}
     await pause(150);
     if(portReports>last){ last=portReports; idle=0; } else idle++;
   }
@@ -1762,9 +1784,9 @@ function writeOut(c,data,h){
                     ? 'nr' : (c.writeValueWithResponse ? 'wr' : 'legacy');
     log('output write mode: '+h.writeMode);
   }
-  if(h.writeMode==='nr') return c.writeValueWithoutResponse(data);
-  if(h.writeMode==='wr') return c.writeValueWithResponse(data);
-  return c.writeValue(data);
+  if(h.writeMode==='nr') return gatt(()=>c.writeValueWithoutResponse(data));
+  if(h.writeMode==='wr') return gatt(()=>c.writeValueWithResponse(data));
+  return gatt(()=>c.writeValue(data));
 }
 /* Outputs (motor ports, LED) go through one sender that keeps only the NEWEST
    value per output and skips a value that is already on the hub. Without the
@@ -3039,7 +3061,7 @@ async function connect(device){
        Every listener goes on before its notifications are switched on. */
     const h=hubs.get(device.id)||{device};
     h.device=device;h.name=device.name;h.connected=true;h.pressed=false;hubs.set(device.id,h);
-    clearSensors(); portEvents=0; portReports=0; valueAsked.clear(); outReset();
+    clearSensors(); portEvents=0; portReports=0; valueAsked.clear(); outReset(); gattChain=Promise.resolve();
     const [svc,io]=await Promise.all([server.getPrimaryService(HUB_SERVICE),server.getPrimaryService(IO_SERVICE)]);
     log('services ready'+ms());
     const [ac,val,fc,outC,inC]=await Promise.all([C_ATTACHED,C_SENSOR,C_FORMAT].map(u=>
@@ -3049,31 +3071,33 @@ async function connect(device){
     if(ac)  ac.addEventListener('characteristicvaluechanged',onPortEvent);
     if(val) val.addEventListener('characteristicvaluechanged',onSensorValue);
     if(fc)  fc.addEventListener('characteristicvaluechanged',onFormat);
-    await Promise.all([val,fc,ac].filter(Boolean).map(c=>c.startNotifications().catch(e=>log('notify '+c.uuid.slice(4,8)+': '+e.message))));
+    for(const c of [val,fc,ac].filter(Boolean)){
+      try{ await gatt(()=>c.startNotifications()); }catch(e){ log('notify '+c.uuid.slice(4,8)+': '+e.message); }
+    }
     log('port, sensor and format notifications on'+ms());
     log('I/O characteristics ready');
     /* the rest is not urgent */
     try{const di=await server.getPrimaryService('device_information');
       for(const c of ['firmware_revision_string','software_revision_string','manufacturer_name_string']){
-        try{log(c.replace(/_/g,' ')+': '+new TextDecoder().decode(await (await di.getCharacteristic(c)).readValue()).replace(/\0+$/,''));}catch(e){}
+        try{log(c.replace(/_/g,' ')+': '+new TextDecoder().decode(await (async()=>{ const ch=await di.getCharacteristic(c); return gatt(()=>ch.readValue()); })()).replace(/\0+$/,''));}catch(e){}
       }}catch(e){log('device information unavailable: '+e.message);}
     try{const c=await svc.getCharacteristic(C_NAME); h.nameC=c;
-      h.name=new TextDecoder().decode(await c.readValue()).replace(/\0+$/,'');}catch(e){log('name read failed: '+e.message);}
+      h.name=new TextDecoder().decode(await gatt(()=>c.readValue())).replace(/\0+$/,'');}catch(e){log('name read failed: '+e.message);}
     const name=h.name;
     try{const bc=await svc.getCharacteristic(C_BUTTON);
       bc.addEventListener('characteristicvaluechanged',ev=>{
         h.pressed=ev.target.value.getUint8(0)===1;log('button '+(h.pressed?'DOWN':'up'));renderHubs();});
-      await bc.startNotifications();
+      await gatt(()=>bc.startNotifications());
       log('button notifications on');}catch(e){log('button characteristic failed: '+e.message);}
     try{const lv=await svc.getCharacteristic(C_LOWVOLT);
       lv.addEventListener('characteristicvaluechanged',()=>log('hub reports low voltage'));
-      await lv.startNotifications();
+      await gatt(()=>lv.startNotifications());
     }catch(e){log('low-voltage alert unavailable: '+e.message);}
     try{const bs=await server.getPrimaryService('battery_service');
       const bl=await bs.getCharacteristic('battery_level');h.batt=bl;
-      h.battery=(await bl.readValue()).getUint8(0);
+      h.battery=(await gatt(()=>bl.readValue())).getUint8(0);
       bl.addEventListener('characteristicvaluechanged',ev=>{h.battery=ev.target.value.getUint8(0);renderHubs();});
-      await bl.startNotifications();
+      await gatt(()=>bl.startNotifications());
     }catch(e){log('battery unavailable: '+e.message);}
     log('setup done'+ms());
     /* ports 1 and 2 not reported yet: nudge the hub (see nudgePorts) */
@@ -3111,10 +3135,10 @@ async function saveHubRename(){
   closeHubRename();
   try{
     const c=h.nameC, data=utf8(name);
-    if(c.writeValueWithResponse) await c.writeValueWithResponse(data); else await c.writeValue(data);
+    await gatt(()=>c.writeValueWithResponse ? c.writeValueWithResponse(data) : c.writeValue(data));
     /* read it back: what the hub kept is the truth */
     let kept=name;
-    try{ kept=new TextDecoder().decode(await c.readValue()).replace(/\0+$/,'')||name; }catch(e){}
+    try{ kept=new TextDecoder().decode(await gatt(()=>c.readValue())).replace(/\0+$/,'')||name; }catch(e){}
     h.name=kept; log('hub renamed to "'+kept+'"');
     toast(tx('hn.done'));
   }catch(e){ log('rename failed: '+e.message); toast(tx('hn.fail')+e.message); }
